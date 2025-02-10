@@ -10,15 +10,29 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFacebook, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWifi,faConciergeBell, faUserFriends, faSmokingBan, faParking, faUtensils, faBreadSlice, faBed, faSignHanging} from '@fortawesome/free-solid-svg-icons';
+  faWifi,
+  faConciergeBell,
+  faUserFriends,
+  faSmokingBan,
+  faParking,
+  faUtensils,
+  faBreadSlice,
+  faBath,
+  faBed,
+  faKitchenSet,
+  faTv,
+  faWineGlass,
+  faLanguage,
+  faHandHoldingHeart,
+  faShieldAlt,
+  faCogs,
+  faWheelchair,
+} from "@fortawesome/free-solid-svg-icons";
+
+
 import {
   Table,
   TableBody,
@@ -35,13 +49,60 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { useRouter } from "next/navigation";
+import { Calendar } from "@/components/ui/calendar"
+import { useState } from "react"
+import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor, PopoverTitle } from "@/components/ui/popover";
+import { format} from "date-fns"
+import { useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import Footer from "./footer/page";
 
 
 
-
-  
 export default function Home() {
   const router = useRouter();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [checkInDate, setCheckInDate] = useState(null);
+  const [checkOutDate, setCheckOutDate] = useState(null);
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
+  const [rooms, setRooms] = useState(1);
+  const [childrenAges, setChildrenAges] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState("");
+  
+  
+  const amenities = [
+    { icon: faWifi, text: "Free WiFi" },
+    { icon: faConciergeBell, text: "Room Service" },
+    { icon: faUserFriends, text: "Family Rooms" },
+    { icon: faSmokingBan, text: "Non-Smoking" },
+    { icon: faParking, text: "Free Parking" },
+    { icon: faUtensils, text: "Restaurant" },
+    { icon: faBreadSlice, text: "Breakfast" },
+    { icon: faHandHoldingHeart, text: "Great for your stay" },
+    { icon: faBath, text: "Bathroom" },
+    { icon: faBed, text: "Bedroom" },
+    { icon: faKitchenSet, text: "Kitchen" },
+    { icon: faTv, text: "Media & Technology" },
+    { icon: faWineGlass, text: "Food & Drink" },
+    { icon: faLanguage, text: "Languages Spoken" },
+    { icon: faCogs, text: "Services" },
+    { icon: faShieldAlt, text: "Safety & Security" },
+    { icon: faCogs, text: "General" },
+    { icon: faWheelchair, text: "Accessibility" },
+  ];
+
+
+ 
+
 
   const handleSignIn = () => {
     router.push("/signin"); 
@@ -58,251 +119,379 @@ export default function Home() {
     "/images/image4.jpg",
   ]
 
+  const galleryImages = {
+    roomPhotos: [
+      "/images/room1.jpg",
+      "/images/room2.jpg",
+      "/images/room3.jpg",
+    ],
+    meetingPhotos: [
+      "/images/meeting1.jpg",
+      "/images/meeting2.jpg",
+      "/images/meeting3.jpg",
+    ],
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleChildrenChange = (newCount) => {
+    if (newCount > children) {
+      // Add default age (0) for new children
+      setChildrenAges([...childrenAges, 0]);
+    } else {
+      // Remove the last child's age when reducing
+      setChildrenAges(childrenAges.slice(0, newCount));
+    }
+    setChildren(newCount);
+  };
+
+  // Handle selecting age for a specific child
+  const handleAgeChange = (index, age) => {
+    const updatedAges = [...childrenAges];
+    updatedAges[index] = age;
+    setChildrenAges(updatedAges);
+  };
+
+  const handleSelect = (roomName) => {
+    const formattedRoom = roomName.toLowerCase().replace(/\s+/g, "-"); // Convert to URL-friendly format
+    router.push(`/roomtype/${formattedRoom}`);
+  };
 
   return (
     
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="flex items-center justify-between text-white px-6 py-4">
-        <div className="flex items-center space-x-4">
-          <Image
-            src="/logo.png" 
-            alt="Company Logo"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-          <h1 className="text-xl font-bold">DEMIREN HOTEL AND RESTAURANT</h1>
-        </div>
-        <div className="flex items-center space-x-4">
-        <Button variant="link" style={{ color: "white" }} onClick={handleRegister}>Register</Button>
-        
-        <Button variant="link" style={{ color: "white" }} onClick={handleSignIn}>Login</Button>
-     
-      </div>
+
+{/* Header */}
+      <header
+  className={`fixed top-0 w-full z-50 px-6 py-4 transition-all duration-400 ${
+    isScrolled ? "bg-[#213555]" : "bg-transparent"
+  }`}
+>
+  <div className="flex items-center justify-between">
+    {/* Left Side: Logo and Title */}
+    <div className="flex items-center space-x-4">
+      <Image
+        src="/logo.png"
+        alt="Company Logo"
+        width={40}
+        height={40}
+        className="rounded-full"
+        onClick={() => document.getElementById("home").scrollIntoView({ behavior: "smooth" })}
+
+      />
+      <h1 className="text-xl font-bold text-white ">
+        DEMIREN HOTEL AND RESTAURANT
+      </h1>
+    </div>
+
+    {/* Right Side: Register and Login Buttons */}
+    <div className="flex space-x-4  ">
+    <Button
+  variant="link"
+  style={{ color: "white" }}
+  onClick={() => document.getElementById("about").scrollIntoView({ behavior: "smooth" })}
+>
+  About
+</Button>
+<Button
+  variant="link"
+  style={{ color: "white" }}
+  onClick={() => document.getElementById("facilities").scrollIntoView({ behavior: "smooth" })}
+>
+  Facilities
+</Button>
+<Button
+  variant="link"
+  style={{ color: "white" }}
+  onClick={() => document.getElementById("gallery").scrollIntoView({ behavior: "smooth" })}
+>
+  Gallery
+</Button>
+
+      
+       {/* Select Dropdown */}
+       <DropdownMenu align="end" className="bg-gray-800 text-white">
+      <DropdownMenuTrigger asChild>
+        <Button variant="link" className="text-white">Rooms</Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent className="bg-gray-800 text-white">
+        {["Standard Twin Room", "Double Room", "Triple Room", "Quadruple Room", "Family Room", "Single Room"].map((room) => (
+          <DropdownMenuItem key={room} onClick={() => handleSelect(room)}>
+            {room}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+
+    <Button
+  variant="link"
+  style={{ color: "white" }}
+  onClick={() => document.getElementById("contact").scrollIntoView({ behavior: "smooth" })}
+>
+Contact us
+</Button>
+    
+      <Button variant="link" style={{ color: "white" }} onClick={handleRegister}>
+        Register
+      </Button>
+      <Button variant="link" style={{ color: "white" }} onClick={handleSignIn}>
+        Login
+      </Button>
+    </div>
+  </div>
       </header>
 
-{/* Section 1: Introduction */}
-<section className="bg-[#F5EFE7] p-8 flex flex-col md:flex-row items-center md:items-start gap-8 md:gap-18 pt-28 ">
-  {/* Left Column - Image */}
-  <div className="w-full md:w-1/2 flex justify-center">
-    <img
-      src="/assets/demerin.jpeg"
-      alt="Demiren Hotel"
-      className="w-[600px] h-auto rounded-lg shadow-lg"
-    />
+{/* Section 1 */}
+<section id="home" className="px-10 py-8 flex flex-col items-center gap-4 mt-[200px] mb-[200px]">
+  <div className="p-8 flex flex-col items-center gap-10">
+  
+<motion.h1
+  initial={{ opacity: 0, y: -15 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8, ease: "easeOut" }}
+  className="text-6xl font-bold text-white"
+>
+  WELCOME TO DEMIREN HOTEL
+</motion.h1>
+  <div className="flex flex-wrap gap-4 items-end">
+  {/* Check-in Date */}
+  <div className="flex-1 min-w-[200px] text-white">
+    <label className="text-sm font-medium mb-1 block">Check-in Date</label>
+    <Popover>
+      <PopoverTrigger asChild> 
+        <Button variant="outline" className="w-full text-left">
+          {checkInDate ? format(checkInDate, "PPP") : "Select Check-in Date"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start">
+        <Calendar
+          mode="single"
+          selected={checkInDate}
+          onSelect={setCheckInDate}
+          disabled={(date) => date < new Date()}
+        />
+      </PopoverContent>
+    </Popover>
+  </div>
+
+  {/* Check-out Date */}
+  <div className="flex-1 min-w-[200px] text-white">
+    <label className="text-sm font-medium mb-1 block ">Check-out Date</label>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className="w-full text-left">
+          {checkOutDate ? format(checkOutDate, "PPP") : "Select Check-out Date"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="start">
+        <Calendar
+          mode="single"
+          selected={checkOutDate}
+          onSelect={setCheckOutDate}
+          disabled={(date) => !checkInDate || date <= checkInDate}
+        />
+      </PopoverContent>
+    </Popover>
+  </div>
+
+  {/* Room Selection */}
+  <div className="flex-1 min-w-[200px]">
+      <label className="text-sm font-medium mb-1 block text-white">Room</label>
+
+      {/* Popover Trigger */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" className="w-full text-left">
+            {adults} adults · {children} children · {rooms} room
+          </Button>
+        </PopoverTrigger>
+
+        {/* Popover Content */}
+        <PopoverContent align="start" className="w-64 bg-white p-4 rounded-lg shadow-md">
+          <div className="flex flex-col gap-3 text-black">
+            {/* Adults */}
+            <div className="flex justify-between items-center">
+              <span>Adults</span>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="icon" onClick={() => setAdults(Math.max(1, adults - 1))}>-</Button>
+                <span>{adults}</span>
+                <Button variant="outline" size="icon" onClick={() => setAdults(adults + 1)}>+</Button>
+              </div>
+            </div>
+
+            {/* Children */}
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between items-center">
+                <span>Children</span>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="icon" onClick={() => handleChildrenChange(Math.max(0, children - 1))}>-</Button>
+                  <span>{children}</span>
+                  <Button variant="outline" size="icon" onClick={() => handleChildrenChange(children + 1)}>+</Button>
+                </div>
+              </div>
+
+              {/* Age Dropdowns for Each Child */}
+              {childrenAges.map((age, index) => (
+                <div key={index} className="flex justify-between items-center">
+                  <span>Child {index + 1} Age</span>
+                  <select
+                    className="border rounded p-1"
+                    value={age}
+                    onChange={(e) => handleAgeChange(index, parseInt(e.target.value))}
+                  >
+                    {[...Array(18).keys()].map((num) => (
+                      <option key={num} value={num}>{num} years</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+
+            {/* Rooms */}
+            <div className="flex justify-between items-center">
+              <span>Rooms</span>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="icon" onClick={() => setRooms(Math.max(1, rooms - 1))}>-</Button>
+                <span>{rooms}</span>
+                <Button variant="outline" size="icon" onClick={() => setRooms(rooms + 1)}>+</Button>
+              </div>
+            </div>
+
+            {/* Done Button */}
+            <Button className="w-full bg-[#213555] text-white mt-2 hover:bg-blue-600">Done</Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+
+  {/* Search Button (Now Positioned Lower) */}
+  <div className="flex-1 min-w-[200px] flex self-end">
+    <Button className=" bg-[#213555] text-white px-4 py-2 rounded-lg hover:bg-[#324A65]">
+      Search
+    </Button>
+  </div>
 </div>
 
-      {/* Right Column - Text */}
-      <div className="w-full md:w-1/2 text-center md:text-left mt-8 md:mt-0 ">
-        <h2 className="text-2xl font-bold">Welcome to Demiren Hotel</h2>
-        <p className="mt-4 text-lg">
-        Set in Cagayan de Oro, within less than 1 km of Centrio Mall and a 13-minute walk of Department of Foreign Affairs – Cagayan de Oro, Demiren Hotel offers accommodation with a restaurant and free WiFi throughout the property as well as free private parking for guests who drive. The property is around 1.9 km from Limketkai Center, 1.7 km from The Atrium and 5.2 km from SM City Cagayan De Oro. The accommodation features room service and a 24-hour front desk for guests.    </p>
-        <p className="mt-4 text-lg">
-        The rooms in the hotel are equipped with a kettle. All rooms come with
-    a private bathroom with a bidet, free toiletries and a hairdryer. The units will
-    provide guests with air conditioning, a safety deposit box and a 
-    flat-screen TV.
-        </p>
-        <div className="mt-8">
-      <p className="text-xl font-bold">Most Popular Facilities</p>
-      <div className="grid grid-cols-3 gap-x-8 gap-y-4 mt-4">
-        <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faWifi} className="w-5 h-5" />
-          <p className="text-sm">Free WiFi</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faConciergeBell} className="w-5 h-5" />
-          <p className="text-sm">Room Service</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faUserFriends} className="w-5 h-5" />
-          <p className="text-sm">Family Rooms</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faSmokingBan} className="w-5 h-5" />
-          <p className="text-sm">Non-Smoking</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faParking} className="w-5 h-5" />
-          <p className="text-sm">Free Parking</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faUtensils} className="w-5 h-5" />
-          <p className="text-sm">Restaurant</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faBreadSlice} className="w-5 h-5" />
-          <p className="text-sm">Breakfast</p>
-        </div>
-      </div>
-    </div>
-      </div>
+  </div>
 </section>
 
 {/* Section 2: Carousel with Images */}
- <section className=" p-8  flex flex-col items-center">
-        <h2 className="text-2xl font-bold color text-white">Our Gallery</h2>
-        <Carousel className="w-full mt-4 max-w-lg">
-          <CarouselContent>
-            {/* Map through the images array */}
-            {images.map((src, index) => (
-              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                <div className="p-1">
-                  <Card>
-                    <CardContent className="flex aspect-square items-center justify-center p-2">
-                      <Image
-                        src={src}
-                        alt={`Carousel Image ${index + 1}`}
-                        width={300}
-                        height={300}
-                        className="rounded-lg object-cover"
-                      />
-                    </CardContent>
-                  </Card>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-      </section>
+<section id="about" className="bg-[#213555] text-white py-16 px-6 md:px-16">
+  <div className="text-center mb-12">
+  <h2 className="text-lg text-gray-500 tracking-widest">ABOUT US</h2>
+  </div>
 
-{/* Section 3: Room Types */}
-      <section className=" p-8">
-        <h2 className="text-2xl font-bold colors text-white">Room Types</h2>
-        <div>
-        <Card className="p-8">
-          <Table>
-  <TableCaption>List of rooms.</TableCaption>
-  <TableHeader>
-    <TableRow>
-      <TableHead className="w-1/2 text-left">Room Type</TableHead>
-      <TableHead className="w-1/2 text-right">Actions</TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody>
-  <TableRow>
-  <TableCell className="font-medium w-1/2 text-left">
-    Ngalan sa room
-  </TableCell>
-  <TableCell className="w-1/2 text-right">
-    <div className="flex justify-end gap-2">
-      <Button className="bg-[#213555] text-white px-4 py-2 rounded-lg hover:bg-[#324A65]">
-        View
-      </Button>
-      <Button variant="outline">Show Price</Button>
+  <div className="flex flex-col md:flex-row items-start justify-between gap-4">
+    {/* Left Column - About Us Text */}
+    <div className="md:w-1/2 max-w-[600px]">
+      <p className="text-lg leading-relaxed">
+        At <span className="font-semibold">Demiren Hotel and Restaurant</span>, we are committed to providing 
+        exceptional services to our valued customers. Located in the heart of 
+        <span className="font-semibold"> Tiano Kalambaguhan Street, Brgy 14, Cagayan de Oro City</span>, 
+        we strive to deliver quality, comfort, and a memorable experience.
+      </p>
+      <p className="text-lg mt-6 leading-relaxed">
+        Founded in <span className="font-semibold">1963</span>, our journey began with a passion for hospitality. 
+        Over the years, we have grown into a trusted name, known for our dedication to excellence 
+        and customer satisfaction.
+      </p>
+
+    
     </div>
-  </TableCell>
-</TableRow>
-  </TableBody>
-</Table>
-          </Card>
+
+    {/* Right Column - Images */}
+    <div className="md:w-1/2 flex flex-col items-center gap-4">
+      <Image 
+        src="/assets/restau.jpg" 
+        alt="Restaurant" 
+        width={600} 
+        height={350} 
+        className="rounded-lg shadow-lg"
+      />
+      <Image 
+        src="/assets/hotel.jpg" 
+        alt="Hotel Facilities" 
+        width={600} 
+        height={350} 
+        className="rounded-lg shadow-lg"
+      />
+    </div>
+  </div>
+</section>
+
+
+
+
+{/* Section 3: hotel facilities */}
+<section id ="facilities" className="flex flex-col items-center text-center">
+<h2 className="text-lg text-white tracking-widest mt-12">FACILITIES OF DEMIREN HOTEL</h2>
+
+  <div className="mt-6 w-full max-w-7xl">
+    <p className="text-lg font-semibold text-white">Most popular facilities</p>
+
+    <div className="flex justify-center">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 p-6">
+  {amenities.map((amenity, index) => (
+    <div
+      key={index}
+      className="flex flex-col items-center justify-center border border-gray-300 rounded-2xl p-6 shadow-lg bg-gradient-to-b from-white  bg-[#F5EFE7] w-44 h-44 transition-transform duration-300 hover:scale-105"
+    >
+      <div className="bg-[#3E5879] p-3 rounded-full shadow-md">
+        <FontAwesomeIcon icon={amenity.icon} className="w-12 h-12 text-white" />
+      </div>
+      <p className="text-md mt-3 text-black font-semibold">{amenity.text}</p>
+    </div>
+  ))}
+</div>
+    </div>
+  </div>
+</section>
+
+
+{/* Section 4: Gallery */}
+<section id="gallery" className="flex flex-col items-center text-center bg-[#F5EFE7] p-8">
+      {/* Gallery Title */}
+      <h2 className="text-lg text-gray-500 tracking-widest">GALLERY</h2>
+
+      {/* Room Photos */}
+      <h1 className="text-4xl font-semibold text-[#826A4A] mt-2">ROOM PHOTOS</h1>
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {galleryImages.roomPhotos.map((image, index) => (
+          <div key={index} className="overflow-hidden rounded-lg shadow-md">
+            <img src={image} alt={`Room ${index + 1}`} className="w-full h-auto object-cover" />
           </div>
-      </section>
- 
-{/* Section 4: Services */}
-   <section className="bg-[#F5EFE7] p-8">
-        <h2 className="text-2xl font-bold">Our Services</h2>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-          {/* Service Cards */}
-          <Card className="bg-[#F5EFE7] shadow-lg rounded-xl">
-            <CardHeader>
-              <CardTitle>Room Booking</CardTitle>
-            </CardHeader>
-            <CardContent>
-              Book a room at our hotel for a luxurious stay.
-            </CardContent>
-            <CardFooter>
-              < Button className="bg-[#213555] text-white px-4 py-2 rounded-lg hover:bg-[#324A65]">Book Now</Button>
-            </CardFooter>
-          </Card>
+        ))}
+      </div>
 
-          <Card className="bg-[#F5EFE7] shadow-lg rounded-xl">
-            <CardHeader>
-              <CardTitle>Restaurant</CardTitle>
-            </CardHeader>
-            <CardContent>
-              Enjoy a wide variety of meals at our restaurant.
-            </CardContent>
-            <CardFooter>
-              <Button className="bg-[#213555] text-white px-4 py-2 rounded-lg hover:bg-[#324A65]">Explore Menu</Button>
-            </CardFooter>
-          </Card>
+      {/* Divider */}
+      <div className="w-full border-t border-gray-300 my-10"></div>
 
-         
-        </div>
-      </section>
-
-{/* Section 5: Facilities */}
-      <section className="bg-[#F5EFE7] p-8">
-        <h2 className="text-2xl font-bold">Facilities of Demiren Hotel</h2>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4">
-        <p className="text-md font-bold">Most popular facilities</p>
-        </div>
-      
-  <div className="flex flex-wrap items-center gap-x-10 gap-y-2">
-  <div className="flex items-center gap-2">
-    <FontAwesomeIcon icon={faWifi} className="w-5 h-5" />
-    <p className="text-sm">Free WiFi</p>
-  </div>
-  <div className="flex items-center gap-2">
-    <FontAwesomeIcon icon={faConciergeBell} className="w-5 h-5" />
-    <p className="text-sm">Room Service</p>
-  </div>
-  <div className="flex items-center gap-2">
-    <FontAwesomeIcon icon={faUserFriends} className="w-5 h-5" />
-    <p className="text-sm">Family Rooms</p>
-  </div>
-  <div className="flex items-center gap-2">
-    <FontAwesomeIcon icon={faSmokingBan} className="w-5 h-5" />
-    <p className="text-sm">Non-Smoking</p>
-  </div>
-  <div className="flex items-center gap-2">
-    <FontAwesomeIcon icon={faParking} className="w-5 h-5" />
-    <p className="text-sm">Free Parking</p>
-  </div>
-  <div className="flex items-center gap-2">
-    <FontAwesomeIcon icon={faUtensils} className="w-5 h-5" />
-    <p className="text-sm">Restaurant</p>
-  </div>
-  <div className="flex items-center gap-2">
-    <FontAwesomeIcon icon={faBreadSlice} className="w-5 h-5" />
-    <p className="text-sm">Breakfast</p>
-  </div>
-  
-
-</div>
-<div className="flex flex-col items-start gap-2">
-  <div className="flex items-center gap-2">
-    <FontAwesomeIcon icon={faSignHanging} className="w-5 h-5" />
-    <p className="text-md font-bold">Great for your stay</p>
-  </div>
-  <ul className="list-disc ml-5">
-    <li>Restaurant</li>
-    <li>Parking</li>
-    <li>Private bathroom</li>
-    <li>Air conditioning</li>
-    <li>Free WiFi</li>
-    <li>Family rooms</li>
-    <li>Flat-screen TV</li>
-    <li>Room service</li>
-    <li>Free parking</li>
-    <li>Shower</li>
-  </ul>
-</div>
+      {/* Meeting Room Photos */}
+      <h1 className="text-4xl font-semibold text-[#826A4A]">FUNCTION/MEETING ROOM PHOTOS</h1>
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {galleryImages.meetingPhotos.map((image, index) => (
+          <div key={index} className="overflow-hidden rounded-lg shadow-md">
+            <img src={image} alt={`Meeting Room ${index + 1}`} className="w-full h-auto object-cover" />
+          </div>
+        ))}
+      </div>
+    </section>
 
 
- </section>
 
-{/* Section 6: FQnA */}
+{/* Section 5: FQnA */}
 <section className="bg-[#F5EFE7] p-8">
   <div className="flex flex-col lg:flex-row gap-8">
     {/* Left Column - Image */}
@@ -397,20 +586,10 @@ export default function Home() {
 </section>
 
           
-{/* Section 7: Footer */}
- <section className="bg-gray-800 text-white p-4 mt-8">
-        <div className="flex justify-between">
-          <div>
-            <h3 className="font-bold text-lg">Contact Us</h3>
-            <p>123 Main Street, City, Country</p>
-          </div>
-          <div>
-            <Link href="/privacy" className="text-sm hover:underline">Privacy Policy</Link>
-            <br />
-            <Link href="/terms" className="text-sm hover:underline">Terms of Service</Link>
-          </div>
-        </div>
-      </section>
+{/* Section 6: Footer */}
+<section className="bg-gray-800 text-white p-4 mt-8">
+<Footer />
+    </section>
   
     </div>
   );
