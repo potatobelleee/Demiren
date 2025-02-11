@@ -67,6 +67,17 @@ html {
   scroll-behavior: smooth;
 }
 
+.booking-page {
+  width: 100%;
+  padding: 30px; /* Adjust as needed */
+}
+
+.booking-form, .booking-summary {
+  width: 100%;
+  margin: 10px 0;
+  padding: 20px;
+}
+
 
 
 @layer base {

@@ -63,20 +63,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import Footer from "./footer/page";
+
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 
 
 
 export default function Home() {
   const router = useRouter();
-  const [isScrolled, setIsScrolled] = useState(false);
   const [checkInDate, setCheckInDate] = useState(null);
   const [checkOutDate, setCheckOutDate] = useState(null);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
   const [childrenAges, setChildrenAges] = useState([]);
-  const [selectedRoom, setSelectedRoom] = useState("");
+
   
   
   const amenities = [
@@ -101,17 +102,6 @@ export default function Home() {
   ];
 
 
- 
-
-
-  const handleSignIn = () => {
-    router.push("/signin"); 
-  };
-
-  const handleRegister = () => {
-    router.push("/register"); 
-  };
-
   const images = [
     "/images/image1.jpg",
     "/images/image2.jpg",
@@ -119,6 +109,7 @@ export default function Home() {
     "/images/image4.jpg",
   ]
 
+  
   const galleryImages = {
     roomPhotos: [
       "/images/room1.jpg",
@@ -132,18 +123,6 @@ export default function Home() {
     ],
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const handleChildrenChange = (newCount) => {
     if (newCount > children) {
@@ -163,98 +142,17 @@ export default function Home() {
     setChildrenAges(updatedAges);
   };
 
-  const handleSelect = (roomName) => {
-    const formattedRoom = roomName.toLowerCase().replace(/\s+/g, "-"); // Convert to URL-friendly format
-    router.push(`/roomtype/${formattedRoom}`);
-  };
+
 
   return (
     
     <div className="min-h-screen flex flex-col">
 
 {/* Header */}
-      <header
-  className={`fixed top-0 w-full z-50 px-6 py-4 transition-all duration-400 ${
-    isScrolled ? "bg-[#213555]" : "bg-transparent"
-  }`}
->
-  <div className="flex items-center justify-between">
-    {/* Left Side: Logo and Title */}
-    <div className="flex items-center space-x-4">
-      <Image
-        src="/logo.png"
-        alt="Company Logo"
-        width={40}
-        height={40}
-        className="rounded-full"
-        onClick={() => document.getElementById("home").scrollIntoView({ behavior: "smooth" })}
-
-      />
-      <h1 className="text-xl font-bold text-white ">
-        DEMIREN HOTEL AND RESTAURANT
-      </h1>
-    </div>
-
-    {/* Right Side: Register and Login Buttons */}
-    <div className="flex space-x-4  ">
-    <Button
-  variant="link"
-  style={{ color: "white" }}
-  onClick={() => document.getElementById("about").scrollIntoView({ behavior: "smooth" })}
->
-  About
-</Button>
-<Button
-  variant="link"
-  style={{ color: "white" }}
-  onClick={() => document.getElementById("facilities").scrollIntoView({ behavior: "smooth" })}
->
-  Facilities
-</Button>
-<Button
-  variant="link"
-  style={{ color: "white" }}
-  onClick={() => document.getElementById("gallery").scrollIntoView({ behavior: "smooth" })}
->
-  Gallery
-</Button>
-
-      
-       {/* Select Dropdown */}
-       <DropdownMenu align="end" className="bg-gray-800 text-white">
-      <DropdownMenuTrigger asChild>
-        <Button variant="link" className="text-white">Rooms</Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent className="bg-gray-800 text-white">
-        {["Standard Twin Room", "Double Room", "Triple Room", "Quadruple Room", "Family Room", "Single Room"].map((room) => (
-          <DropdownMenuItem key={room} onClick={() => handleSelect(room)}>
-            {room}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-
-    <Button
-  variant="link"
-  style={{ color: "white" }}
-  onClick={() => document.getElementById("contact").scrollIntoView({ behavior: "smooth" })}
->
-Contact us
-</Button>
-    
-      <Button variant="link" style={{ color: "white" }} onClick={handleRegister}>
-        Register
-      </Button>
-      <Button variant="link" style={{ color: "white" }} onClick={handleSignIn}>
-        Login
-      </Button>
-    </div>
-  </div>
-      </header>
+<Header />
 
 {/* Section 1 */}
-<section id="home" className="px-10 py-8 flex flex-col items-center gap-4 mt-[200px] mb-[200px]">
+<section id="home" className="px-10 py-8 flex flex-col items-center gap-4 mt-[200px] mb-[380px]">
   <div className="p-8 flex flex-col items-center gap-10">
   
 <motion.h1

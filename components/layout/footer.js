@@ -1,7 +1,11 @@
+"use client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const Footer = () => {
+    const router = useRouter();
   return (
     <footer id ="contact" className="bg-gray-800 text-white p-8 mt-8">
     <div className="container mx-auto">
