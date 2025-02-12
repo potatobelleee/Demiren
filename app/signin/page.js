@@ -5,10 +5,10 @@ import { Label } from "@/components/ui/label";
 
 export default function Login() {
   return (
-    <div className="flex min-h-screen  bg-[#213555]">
+    <div className="flex min-h-screen  bg-[#6482AD]">
       {/* Left side form */}
       <div className="w-1/2 flex justify-center items-center p-6">
-        <div className="w-full max-w-md p-6  bg-[#D8C4B6] rounded-md shadow-lg">
+        <div className="w-full max-w-md p-6  bg-[#E2DAD6] rounded-md shadow-lg">
           <h1 className="text-2xl font-bold text-center mb-6">Login your account</h1>
 
           {/* Login Form */}
@@ -53,7 +53,7 @@ export default function Login() {
       {/* Right side image */}
       <div className="w-1/2 relative hidden md:block">
         <img
-          src="/assets/demiren.jpg"
+          src="/assets/dems.jpg"
           alt="Image"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />

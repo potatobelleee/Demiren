@@ -12,15 +12,15 @@ export default function Register(){
       {/* Left side image */}
       <div className="w-1/2 relative hidden md:block">
         <img
-          src="/assets/demiren.jpg"
+          src="/assets/dems.jpg"
           alt="Register"
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>
     
       {/* Right side form with new background */}
-      <div className="w-1/2 flex justify-center items-center p-6 bg-[#213555]">
-        <div className="w-full max-w-md p-6 bg-[#D8C4B6] rounded-md shadow-lg">
+      <div className="w-1/2 flex justify-center items-center p-6 bg-[#6482AD]">
+        <div className="w-full max-w-md p-6 bg-[#E2DAD6] rounded-md shadow-lg">
           <h2 className="text-center text-2xl font-bold mb-4 text-[#213555]">Create an Account</h2>
     
           {/* Registration Form */}
