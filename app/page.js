@@ -103,9 +103,9 @@ export default function Home() {
   
   const galleryImages = {
     roomPhotos: [
-      "/assets/gall1.jpg",
-      "/assets/gall2.jpg",
-      "/assets/gall3.jpg",
+      "/assets/gallery/gall1.jpg",
+      "/assets/gallery/gall2.jpg",
+      "/assets/gallery/gall3.jpg",
     ],
     meetingPhotos: [
       "/images/meeting1.jpg",

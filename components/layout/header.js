@@ -1,4 +1,5 @@
 
+
 "use client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -166,7 +167,7 @@ export default function Header() {
           <Button variant="link" style={{ color: "white" }} onClick={handleSignIn}>
             Login
           </Button>
-          <Button className="bg-blue-500 hover:bg-blue-600" style={{ color: "white" }} onClick={handleBooking}>
+          <Button className="bg-[#6482AD] hover:bg-[#7FA1C3]" style={{ color: "white" }} onClick={handleBooking}>
           BOOK NOW
         </Button>
         </div>
